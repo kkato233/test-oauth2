@@ -34,6 +34,29 @@ namespace oauth2web
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
            services.AddRazorPages();
+
+            // Facebook 認証設定
+            if (Configuration["Authentication:Facebook:AppId"]?.Length > 0)
+            {
+                services.AddAuthentication().AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.Fields.Add("name_format");// 日本語で表示できる表記
+                    facebookOptions.Fields.Add("is_verified");// 認証されたログインであること。
+                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                });
+            }
+
+            // Google 認証設定
+            if (Configuration["Authentication:Google:ClientId"]?.Length > 0)
+            {
+                services.AddAuthentication().AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                });
+            }
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
